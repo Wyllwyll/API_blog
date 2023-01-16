@@ -1,14 +1,13 @@
 // imports
-import * as express from 'express';
+import express from 'express';
 import * as dotenv from 'dotenv';
 import { JwtPayload } from 'jsonwebtoken';
+import { articlesRouter } from './routes/articlesRouter';
+import { usersRouter } from './routes/usersRouter';
 
-declare global
-{
-    namespace Express
-    {
-        interface Request
-        {
+declare global {
+    namespace Express {
+        interface Request {
             user?: JwtPayload // permet d'inserer un user a req pour l'id
         }
     }
@@ -21,15 +20,14 @@ dotenv.config({ path: '.env' });
 
 // Express server creation
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8000;
 
 // for parsing application/json
 app.use(express.json());
 
 
 // Add headers before the routes are defined
-app.use(function (req, res, next)
-{
+app.use(function (req, res, next) {
 
     res.setHeader('authorization', '');
     // Website you wish to allow to connect
@@ -49,15 +47,32 @@ app.use(function (req, res, next)
     next();
 });
 
+
+
+
+
 /************************************************
    * Add the route here
    */
+app.use('/api/articles', articlesRouter);
+app.use('/api/users', usersRouter)
 
 
+
+
+
+
+app.all('*', function (req, res) {
+    res.status(404).json(
+        {
+            status: "FAIL",
+            message: "Nécessite un nombre valable en tant qu'Id"
+        });
+}
+);
 
 // Bind express server on port 8080
-app.listen(port, () =>
-{
+app.listen(port, () => {
     console.log(
         `Express server has started on port ${port}. Open http://localhost:${port} to see results`
     );

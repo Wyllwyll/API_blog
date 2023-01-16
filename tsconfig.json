@@ -1,19 +1,31 @@
 {
     "compilerOptions": {
-        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "target": "es2017",
+        "module": "CommonJS",
+        "lib": [
+            "esnext"
+        ],
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "skipDefaultLibCheck": true,
         "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "outDir": "./dist",
         "strictPropertyInitialization": false,
-        /* Language and Environment */
-        "target": "es2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-        /* Modules */
-        "module": "commonjs", /* Specify what module code is generated. */
-        /* Emit */
-        "outDir": "./dist", /* Specify an output folder for all emitted files. */
-        /* Interop Constraints */
-        "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
-        /* Type Checking */
-        "strict": true, /* Enable all strict type-checking options. */
-        /* Completeness */
-        "skipLibCheck": true /* Skip type checking all .d.ts files. */
+        "paths": {
+            "~/*": [
+                "./src/*"
+            ],
+            "~~/*": [
+                "./*"
+            ]
+        }
+    },
+    "ts-node": {
+        
     }
 }

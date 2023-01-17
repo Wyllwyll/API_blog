@@ -1,5 +1,5 @@
 import express from "express";
-import { CommentaryController } from "~/controllers/commentairesController"
+import { CommentaryController } from "../controllers/commentairesController"
 import { authenticateJWT } from "../middleware/auth";
 
 export const commentaryRouter=express.Router()
@@ -12,4 +12,4 @@ commentaryRouter.post('/',authenticateJWT, commentaryController.postCommentary);
 
 commentaryRouter.delete('/:id',authenticateJWT,commentaryController.deleteCommentary);
 
-commentaryRouter.put('/:id', authenticateJWT, commentaryController.updateCommentary)
+commentaryRouter.put('/', authenticateJWT, commentaryController.updateCommentary)

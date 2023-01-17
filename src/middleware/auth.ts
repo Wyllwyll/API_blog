@@ -16,7 +16,7 @@ export const authenticateJWT = (req: CustomRequest, res: Response, next: NextFun
                     return res.sendStatus(403);
                 }
                 if (token) {
-                    req.userId = parseInt((token as jwt.JwtPayload).userId);
+                    req.body.userId = parseInt((token as jwt.JwtPayload).userId);
                     next();
                 }
 

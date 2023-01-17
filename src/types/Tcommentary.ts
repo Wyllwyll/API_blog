@@ -4,6 +4,6 @@ export type Tcommentary = {
     title:string,
     created_date:number,
     updtate:number,
-    user_id:number,
+    users_id:number,
     article_id:number
 }

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { usersRouter } from "~/routes/usersRouter";
-import { CommentairesServices } from "~/services/commentairesServices";
+import { CommentairesServices } from "../services/commentairesServices";
 const commentaryService = new CommentairesServices
 
 
@@ -31,14 +30,14 @@ export class CommentaryController {
     }
 
     async postCommentary(req: Request, res: Response) {
-        const title = req.body.title
-        const content = req.body.content
-        const users_id = req.body.userId
-        const article_id = req.body.articleId
+        const title: string = req.body.title
+        const content: string = req.body.content
+        const userId: number = req.body.userId
+        const articleId: number = req.body.articleId
 
-        if (title && content && users_id && article_id != null) {
+        if (title && content && userId && articleId) {
             try {
-                const data = await commentaryService.addCommentary(title, content, users_id, article_id)
+                const data = await commentaryService.addCommentary(userId, articleId, title, content)
                 res.status(201).json(
                     {
                         status: "success",
@@ -69,8 +68,7 @@ export class CommentaryController {
 
     async deleteCommentary(req: Request, res: Response) {
         const commentaryId = parseInt(req.params.id);
-
-        if (Number.isNaN(commentaryId)) {
+        if (commentaryId) {
             try {
                 const commentaryData = await commentaryService.getCommentaryByArticleId(commentaryId)
                 if (commentaryData?.length === 0) {
@@ -105,74 +103,78 @@ export class CommentaryController {
             }
         }
         else {
+            console.log("test3");
+
             res.status(404).json(
                 {
                     stats: "fail",
-                    message: "ID dec commentaire nécessaire"
+                    message: "ID de commentaire nécessaire"
                 }
             )
         }
     }
     async updateCommentary(req: Request, res: Response) {
-        const commentaryId = parseInt(req.params.id)
-        const uptContent = req.body.content
-        const uptTitle = req.body.title
-        const user_id = req.body.userId
+        const commentaryId: number = parseInt(req.body.id)
+        const uptContent: string = req.body.content
+        const uptTitle: string = req.body.title
+        const userId: number = req.body.userId
 
-        if (!Number.isNaN(commentaryId)) {
-            if (uptTitle && uptContent != undefined) {
-                try {
-                    const commentaryData = await commentaryService.updateCommentary(uptTitle, uptContent, commentaryId)
-                    if (!commentaryData) {
-                        res.status(404).json(
-                            {
-                                status: "fail",
-                                message: "nécessite un nombre valable en tant qu'ID"
-                            }
-                        )
-                    }
-                    else if (user_id !== commentaryData["users_id"]) {
-                        res.status(404).json(
-                            {
-                                status: "fail",
-                                message: "modification non-autorisée"
-                            }
-                        )
-                    }
-                    else {
-                        const data = await commentaryService.updateCommentary(uptTitle, uptContent, commentaryId)
-                        if (data) {
-                            res.status(201).json(
-                                {
-                                    status: "success",
-                                    message: "commentaire modifié",
-                                    data: data
-                                }
-                            )
-                        }
-                    }
+        if (!commentaryId || !uptTitle || !uptContent) {
+            res.status(400).json(
+                {
+                    status: "fail",
+                    message: "valeurs manquantes"
                 }
-                catch (err: any) {
-                    res.status(500).json(
-                        {
-                            status: "fail",
-                            message: "erreur serveur"
-                        }
-                    )
-                }
-            }
-            else {
-                res.status(400).json(
+            )
+
+            return;
+        }
+
+
+        console.log("test1", commentaryId, uptTitle, uptContent);
+
+        try {
+            // recupere le comment avec l'id commentaryId
+            const checkComment = await commentaryService.getCommentaryById(commentaryId);
+            console.log(checkComment);
+            
+            // verifier que ce comment.user_id === req.body.userId
+            if (checkComment && checkComment.users_id !== userId) {
+                res.status(404).json(
                     {
                         status: "fail",
-                        message: "valeurs manquantes"
+                        message: "modification non-autorisée"
+                    }
+                )
+
+                return;
+            }
+            // tout va bien on update le comment
+            const comment = await commentaryService.updateCommentary(uptTitle, uptContent, commentaryId)
+            if (comment) {
+                res.status(201).json(
+                    {
+                        status: "success",
+                        message: "commentaire modifié",
+                        data: comment
                     }
                 )
             }
         }
+        catch (err: any) {
+            console.log(err);
+            
+            res.status(500).json(
+                {
+                    status: "fail",
+                    message: "erreur serveur"
+                }
+            )
+        }
     }
-
-
-
 }
+
+
+
+
 

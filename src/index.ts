@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { JwtPayload } from 'jsonwebtoken';
 import { articlesRouter } from './routes/articlesRouter';
 import { usersRouter } from './routes/usersRouter';
+import { commentaryRouter } from './routes/commentairesRoutes';
 
 declare global {
     namespace Express {
@@ -51,7 +52,8 @@ app.use(function (req, res, next) {
    * Add the route here
    */
 app.use('/api/articles', articlesRouter);
-app.use('/api/users', usersRouter)
+app.use('/api/users', usersRouter);
+app.use ('/api/commentary', commentaryRouter);
 
 app.all('*', function (req, res) {
     res.status(404).json(

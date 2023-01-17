@@ -73,14 +73,11 @@ export class ArticlesController {
 
 
     async postArticle(req: CustomRequest, res: Response) {
-        console.log("test1");
-
         const content = req.body.content
         const user_id = req.userId
         const title = req.body.title
 
         if (title && content && user_id != null) {
-            console.log("test2");
             try {
                 const data = await articlesService.postArticles(title, content, user_id)
                 res.status(201).json(

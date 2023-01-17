@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { CustomRequest } from "./usersIdProperty";
 
-const accessTokenSecret = process.env.ACCESSTOKENSECRET
+const accessTokenSecret = process.env.TOKEN_SECRET
 
 export const authenticateJWT = (req: CustomRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;

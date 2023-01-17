@@ -28,7 +28,8 @@ export class ArticlesController {
         }
     }
 
-    async GetArticlesId(req: Request, res: Response) {
+    async getArticleId(req: Request, res: Response) {
+
         const articleId = parseInt(req.params.id);
         if (!Number.isNaN(articleId)) {
             try {
@@ -71,12 +72,15 @@ export class ArticlesController {
     }
 
 
-    async postArticles(req: CustomRequest, res: Response) {
+    async postArticle(req: CustomRequest, res: Response) {
+        console.log("test1");
+
         const content = req.body.content
         const user_id = req.userId
         const title = req.body.title
 
         if (title && content && user_id != null) {
+            console.log("test2");
             try {
                 const data = await articlesService.postArticles(title, content, user_id)
                 res.status(201).json(
@@ -109,32 +113,24 @@ export class ArticlesController {
     }
 
 
-    async delArticles(req: CustomRequest, res: Response) {
+    async deleteArticle(req: CustomRequest, res: Response) {
         const articleId = parseInt(req.params.id);
         const user_id = req.userId
         if (!Number.isNaN(articleId)) {
+
             try {
-                const articleData = await articlesService.delArticles(articleId)
-                if (!articleData) {
+                const articleData = await articlesService.getArticlesById(articleId)
+                if (articleData === 0) {
                     res.status(404).json(
                         {
                             status: "fail",
-                            message: "ID fournit ne correspond à aucun article"
-                        }
-                    )
-                }
-                else if (
-                    user_id !== articleData['users_id']) {
-                    res.status(404).json(
-                        {
-                            status: "fail",
-                            message: "Suppression non-autorisée"
+                            message: "ID ne correspond à aucun article ou ne vous appartient pas"
                         }
                     )
                 }
                 else {
                     const data = await articlesService.delArticles(articleId)
-                    if (data) {
+                    if (data! > 0) {
                         res.status(200).json(
                             {
                                 status: "success",
@@ -165,7 +161,7 @@ export class ArticlesController {
         }
     }
 
-    async uptArticles(req: CustomRequest, res: Response) {
+    async updateArticle(req: CustomRequest, res: Response) {
         const articleId = parseInt(req.params.id)
         const uptContent = req.body.content
         const uptTitle = req.body.title

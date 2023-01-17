@@ -4,21 +4,22 @@ import { UsersService } from '../services/usersService';
 import { Request, Response } from 'express';
 
 
-const accessTokenSecret = process.env.ACCESSTOKENSECRET as string;
+const accessTokenSecret = process.env.TOKEN_SECRET as string;
 
 const usersService = new UsersService();
 
 export class UserController {
 
     async login(req: Request, res: Response) {
-        const name = req.body.users_name;
+
+        const name = req.body.name;
         const password = req.body.password
         try {
             const user = await usersService.getUsersByName(name);
-            if (user) {
-                bcrypt.compare(password, user.password, async function (err, result) {
+            const accessToken = jwt.sign({ userId: user.id }, accessTokenSecret);
+            if (user != undefined) {
+                bcrypt.compare(password, user.password, function (err, result) {
                     if (result == true) {
-                        const accessToken = jwt.sign({ userId: user.id }, accessTokenSecret);
                         res.status(200).json(
                             {
                                 status: 'OK',
@@ -62,7 +63,7 @@ export class UserController {
 
 
     register(req: Request, res: Response) {
-        const name = req.body.user_name;
+        const name = req.body.name;
         const password = req.body.password;
 
         bcrypt.hash(password, 10, async function (err, hash) {

@@ -47,27 +47,19 @@ app.use(function (req, res, next) {
     next();
 });
 
-
-
-
-
 /************************************************
    * Add the route here
    */
 app.use('/api/articles', articlesRouter);
 app.use('/api/users', usersRouter)
 
-
-
-
-
-
 app.all('*', function (req, res) {
     res.status(404).json(
         {
             status: "FAIL",
             message: "Nécessite un nombre valable en tant qu'Id"
-        });
+        }
+    );
 }
 );
 

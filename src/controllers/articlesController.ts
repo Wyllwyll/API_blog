@@ -216,4 +216,51 @@ export class ArticlesController {
             }
         }
     }
+
+
+    async getArticleWithCommentary(req: CustomRequest, res: Response) {
+        const articleId = (req.params.id);
+        console.log("test1",articleId);
+        
+        if (!Number.isNaN(articleId)) {
+            try {
+                const data = await articlesService.getArticleWithCommentary(articleId)
+                if (data) {
+                    res.status(200).json(
+                        {
+                            status: "success",
+                            data: data
+                        }
+                    )
+                }
+                else {
+                    res.status(404).json(
+                        {
+                            status: "fail",
+                            message: "l'ID ne correspond à aucun article"
+                        }
+                    )
+                }
+            }
+            catch (err: any) {
+                res.status(500).json(
+                    {
+                        status: "fail",
+                        message: "Erreur serveur"
+                    }
+                )
+                console.log(err.stack);
+            }
+        }
+        else {
+            res.status(404).json(
+                {
+                    status: "fail",
+                    message: "numéro d'ID nécessaire"
+                }
+            )
+        }
+    }
+
+
 }

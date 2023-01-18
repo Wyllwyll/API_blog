@@ -14,7 +14,6 @@ export class CommentairesServices {
         return undefined
     }
 
-
     async getCommentaryByArticleId(id: number) {
         const data = await client.query('SELECT * FROM commentary WHERE article_id=$1', [id])
         if (data.rowCount) {

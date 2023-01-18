@@ -16,3 +16,5 @@ articlesRouter.post('/', authenticateJWT, articlesController.postArticle);
 articlesRouter.delete('/:id', authenticateJWT, articlesController.deleteArticle);
 
 articlesRouter.put('/:id', authenticateJWT, articlesController.updateArticle);
+
+articlesRouter.get('/comments/:id', authenticateJWT,articlesController.getArticleWithCommentary);

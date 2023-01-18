@@ -1,13 +1,18 @@
 import express from "express";
 import { UserController } from "../controllers/usersController";
-require ('dotenv').config();
+require('dotenv').config();
 
 
+/**
+ * const permettant le routage des requètes concernant un user
+ * * **.post('/register')** : route d'enregistrement d'un user
+ * * **.post('/login')** : route de log d'un user
+ */
+export const usersRouter = express.Router();
+const usersController = new UserController()
 
-export const usersRouter=express.Router();
+/** route d'enregistrement d'un user */
+usersRouter.post('/register', (req, res) => usersController.register(req, res));
 
-const usersController=new UserController()
-
-usersRouter.post ('/register', (req,res)=>usersController.register(req,res));
-
-usersRouter.post ('/login', (req,res)=>usersController.login(req,res));
+/** route de log d'un user */
+usersRouter.post('/login', (req, res) => usersController.login(req, res));

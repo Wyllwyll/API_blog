@@ -8,15 +8,24 @@ const accessTokenSecret = process.env.TOKEN_SECRET as string;
 
 const usersService = new UsersService();
 
+
+/**
+ * Class permettant le contrôle des données entrantes pour les requêtes users
+ * * **.login()** : Contrôle préalable au login d'un user
+ * * **.register()**: Contrôle préalable au register d'un user
+ */
 export class UserController {
 
+    /**
+     * Contrôle préalable au login d'un user
+     */
     async login(req: Request, res: Response) {
 
         const name = req.body.name;
         const password = req.body.password
         try {
             const user = await usersService.getUsersByName(name);
-            const accessToken = jwt.sign({ userId: user.id, admin:user.admin }, accessTokenSecret);
+            const accessToken = jwt.sign({ userId: user.id, admin: user.admin }, accessTokenSecret);
             if (user != undefined) {
                 bcrypt.compare(password, user.password, function (err, result) {
                     if (result == true) {
@@ -61,7 +70,9 @@ export class UserController {
         }
     }
 
-
+    /**
+     * Contrôle préalable au register d'un user
+     */
     register(req: Request, res: Response) {
         const name = req.body.name;
         const password = req.body.password;

@@ -5,9 +5,17 @@ import { CommentairesServices } from "../services/commentairesServices";
 const commentaryService = new CommentairesServices
 
 
-
+/**
+ * Class permettant le contrôle des données entrantes pour les requêtes commentaires
+ * * **.getAllCommentary()** : Contrôle préalable à la récupération de tous les commentaires 
+ * * **.postCommentary()** : Contrôle préalable à l'ajout d'un nouveeau commentaire
+ * * **.updateCommentary** : Contrôle préalable à la modification d'un commentaire
+ * * **.deleteCommentary()** : Contrôle préalable à la suppression d'un commentaire
+ */
 export class CommentaryController {
-
+    /**
+     *Contrôle préalable à la récupération de tous les commentaires
+     */
     async getAllCommentary(req: Request, res: Response) {
         try {
             const data = await commentaryService.getAllCommentary();
@@ -31,6 +39,9 @@ export class CommentaryController {
         }
     }
 
+    /**
+    *Contrôle préalable à l'ajout d'un nouveeau commentaire
+     */
     async postCommentary(req: Request, res: Response) {
         const title: string = req.body.title
         const content: string = req.body.content
@@ -68,11 +79,14 @@ export class CommentaryController {
         }
     }
 
+    /**
+     * Contrôle préalable à la suppression d'un commentaire
+     */
     async deleteCommentary(req: Request, res: Response) {
         const commentaryId = parseInt(req.params.id);
-        const userId=req.body.user_id
-        const admin=req.body.admin
-        
+        const userId = req.body.user_id
+        const admin = req.body.admin
+
         if (commentaryId) {
             try {
                 const commentaryData = await commentaryService.getCommentaryById(commentaryId)
@@ -83,7 +97,7 @@ export class CommentaryController {
                             message: "ID ne correspond à aucun commentaire"
                         }
                     )
-                    
+
                 }
                 else if (userId !== commentaryData?.user_id && !admin) {
                     res.status(404).json(
@@ -126,12 +140,16 @@ export class CommentaryController {
             )
         }
     }
+
+    /**
+     *Contrôle préalable à la modification d'un commentaire
+     */
     async updateCommentary(req: Request, res: Response) {
         const commentaryId: number = parseInt(req.body.id)
         const uptContent: string = req.body.content
         const uptTitle: string = req.body.title
         const userId: number = req.body.userId
-        const admin=req.body.admin
+        const admin = req.body.admin
 
         if (!commentaryId || !uptTitle || !uptContent) {
             res.status(400).json(

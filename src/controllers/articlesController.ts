@@ -4,9 +4,20 @@ import { CustomRequest } from "../middleware/usersIdProperty";
 
 const articlesService = new ArticlesService()
 
-
+/**
+ * Class permettant le contrôle des données entrantes pour les requête articles
+ * * **.getArticles()** : Contrôle préalable à la récupération de tous les articles 
+ * * **.getArticleId()** : Contrôle préalable à la récupération d'un article grâce à son id
+ * * **.postArticle()** : Contrôle préalable à l'ajout d'un nouvel article
+ * * **.updtateArticle()** : Contrôle préalable à la modification d'un article
+ * * **.deleteArticle()** : Contrôle préalable à la suppression d'un article
+ * * **.getArticleWithCommentary()** : contrôle préalable à la récupération des commentaires PAR articles ID
+ */
 export class ArticlesController {
 
+    /**
+     * Contrôle préalable à la récupération de tous les articles
+     */
     async getArticles(req: Request, res: Response) {
         try {
             const data = await articlesService.getAllArticles();
@@ -29,6 +40,9 @@ export class ArticlesController {
         }
     }
 
+    /**
+     * Contrôle préalable à la récupération d'un article grâce à son id
+     */
     async getArticleId(req: Request, res: Response) {
 
         const articleId = parseInt(req.params.id);
@@ -72,7 +86,9 @@ export class ArticlesController {
         }
     }
 
-
+    /**
+    *Contrôle préalable à l'ajout d'un nouvel article
+     */
     async postArticle(req: CustomRequest, res: Response) {
         const content = req.body.content
         const user_id = req.userId
@@ -110,7 +126,9 @@ export class ArticlesController {
         }
     }
 
-
+    /**
+    *Contrôle préalable à la suppression d'un article
+     */
     async deleteArticle(req: CustomRequest, res: Response) {
         const articleId = parseInt(req.params.id);
         const userId = req.body.userId
@@ -169,12 +187,16 @@ export class ArticlesController {
         }
     }
 
+    /**
+     * 
+    *Contrôle préalable à la modification d'un article
+     */
     async updateArticle(req: CustomRequest, res: Response) {
         const articleId = parseInt(req.params.id)
         const uptContent = req.body.content
         const uptTitle = req.body.title
         const userId = req.userId
-        const admin=req.body.admin
+        const admin = req.body.admin
 
         if (!Number.isNaN(articleId)) {
             if (uptContent && uptTitle !== undefined) {
@@ -229,10 +251,11 @@ export class ArticlesController {
         }
     }
 
+    /**
+    * contrôle préalable à la récupération des commentaires PAR articles ID
+     */
     async getArticleWithCommentary(req: CustomRequest, res: Response) {
         const articleId = (req.params.id);
-        console.log("test1",articleId);
-        
         if (!Number.isNaN(articleId)) {
             try {
                 const data = await articlesService.getArticleWithCommentary(articleId)

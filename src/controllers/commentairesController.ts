@@ -147,7 +147,6 @@ export class CommentaryController {
         try {
             // recupere le comment avec l'id commentaryId
             const checkComment = await commentaryService.getCommentaryById(commentaryId);
-            console.log(checkComment);
 
             // verifier que ce comment.user_id === req.body.userId
             if (checkComment && checkComment.user_id !== userId && !admin) {

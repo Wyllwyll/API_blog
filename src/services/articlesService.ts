@@ -40,6 +40,32 @@ export class ArticlesService {
         }
         return undefined
     }
+    
+    async getArticleWithCommentary(articleId: string) {
+        const askedArticle = await client.query(
+            'SELECT articles.title, articles.content,name, commentary.content AS content2 FROM articles JOIN commentary ON articles.id = commentary.article_id JOIN users ON users.id = commentary.users_id WHERE articles.id = $1',
+            [articleId]
+        );
 
+        if (askedArticle.rowCount > 0) {
+            const dataArticle = {
+                titre: askedArticle.rows[0].titre,
+                content: askedArticle.rows[0].content,
+            };
+
+            const dataComments = askedArticle.rows.map((item) => {
+                return {
+                    name: item.name,
+                    content: item.content2,
+                };
+            });
+            return {
+                article: dataArticle,
+                comments: dataComments,
+            };
+        }
+
+        return undefined;
+    }
 
 }

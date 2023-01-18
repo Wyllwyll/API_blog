@@ -16,7 +16,7 @@ export class UserController {
         const password = req.body.password
         try {
             const user = await usersService.getUsersByName(name);
-            const accessToken = jwt.sign({ userId: user.id }, accessTokenSecret);
+            const accessToken = jwt.sign({ userId: user.id, admin:user.admin }, accessTokenSecret);
             if (user != undefined) {
                 bcrypt.compare(password, user.password, function (err, result) {
                     if (result == true) {

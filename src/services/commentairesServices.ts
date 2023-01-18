@@ -15,7 +15,7 @@ export class CommentairesServices {
     }
 
 
-    async getCommentaryByArticleId(id: number) {
+    async getCommentaryByArticleId(id: number):Promise<Tcommentary[] | undefined> {
         const data = await client.query('SELECT * FROM commentary WHERE article_id=$1', [id])
         if (data.rowCount) {
             return data.rows
@@ -32,7 +32,7 @@ export class CommentairesServices {
     }
 
 
-    async addCommentary(userId: number, articleId: number, title: string, content: string) {
+    async addCommentary(userId: number, articleId: number, title: string, content: string): Promise<Tcommentary | undefined> {
         const data = await client.query('INSERT INTO commentary (users_id,article_id,title,content) VALUES ($1,$2,$3,$4) RETURNING *', [userId, articleId, title, content]);
         if (data.rowCount) {
             return data.rows[0]
@@ -41,15 +41,13 @@ export class CommentairesServices {
     }
 
 
-    async deleteCommentary(id: number) {
+    async deleteCommentary(id: number): Promise<number> {
         const data = await client.query('DELETE FROM commentary WHERE id=$1 RETURNING *', [id])
         return data.rowCount;
     }
 
 
-    async updateCommentary(uptTitle: string, uptContent: string, commentary_id: number) {
-        console.log('TEST');
-
+    async updateCommentary(uptTitle: string, uptContent: string, commentary_id: number): Promise<Tcommentary | undefined> {
         const data = await client.query('UPDATE commentary SET title =$1, content =$2 WHERE id=$3 RETURNING *', [uptTitle, uptContent, commentary_id])
 
         if (data.rowCount) {

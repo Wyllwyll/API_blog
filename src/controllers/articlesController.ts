@@ -1,6 +1,7 @@
 import { ArticlesService } from "../services/articlesService";
 import { Request, Response } from "express";
 import { CustomRequest } from "../middleware/usersIdProperty";
+
 const articlesService = new ArticlesService()
 
 
@@ -77,7 +78,7 @@ export class ArticlesController {
         const user_id = req.userId
         const title = req.body.title
 
-        if (title && content && user_id != null) {
+        if (title && content && user_id) {
             try {
                 const data = await articlesService.postArticles(title, content, user_id)
                 res.status(201).json(
@@ -112,19 +113,29 @@ export class ArticlesController {
 
     async deleteArticle(req: CustomRequest, res: Response) {
         const articleId = parseInt(req.params.id);
-        const user_id = req.userId
-        if (!Number.isNaN(articleId)) {
+        const userId = req.body.userId
+        const admin = req.body.admin
 
+        if (!Number.isNaN(articleId)) {
             try {
                 const articleData = await articlesService.getArticlesById(articleId)
                 if (articleData === 0) {
                     res.status(404).json(
                         {
                             status: "fail",
-                            message: "ID ne correspond à aucun article ou ne vous appartient pas"
+                            message: "ID ne correspond à aucun article"
                         }
                     )
                 }
+                else if (userId !== articleData.user_id && !admin) {
+                    res.status(400).json(
+                        {
+                            status: "fail",
+                            message: "action non autorisée"
+                        }
+                    )
+                }
+
                 else {
                     const data = await articlesService.delArticles(articleId)
                     if (data! > 0) {
@@ -151,7 +162,7 @@ export class ArticlesController {
         else {
             res.status(404).json(
                 {
-                    statjus: "fail",
+                    status: "fail",
                     message: "ID nécessaire"
                 }
             )
@@ -162,7 +173,8 @@ export class ArticlesController {
         const articleId = parseInt(req.params.id)
         const uptContent = req.body.content
         const uptTitle = req.body.title
-        const user_id = req.userId
+        const userId = req.userId
+        const admin=req.body.admin
 
         if (!Number.isNaN(articleId)) {
             if (uptContent && uptTitle !== undefined) {
@@ -176,7 +188,7 @@ export class ArticlesController {
                             }
                         )
                     }
-                    else if (user_id !== articleData["users_id"]) {
+                    else if (userId !== articleData.user_id && !admin) {
                         res.status(404).json(
                             {
                                 status: "fail",

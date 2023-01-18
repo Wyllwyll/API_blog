@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { CustomRequest } from "~/middleware/usersIdProperty";
+import { Tcommentary } from "~/types/Tcommentary";
 import { CommentairesServices } from "../services/commentairesServices";
 const commentaryService = new CommentairesServices
 
@@ -68,14 +70,26 @@ export class CommentaryController {
 
     async deleteCommentary(req: Request, res: Response) {
         const commentaryId = parseInt(req.params.id);
+        const userId=req.body.user_id
+        const admin=req.body.admin
+        
         if (commentaryId) {
             try {
-                const commentaryData = await commentaryService.getCommentaryByArticleId(commentaryId)
-                if (commentaryData?.length === 0) {
+                const commentaryData = await commentaryService.getCommentaryById(commentaryId)
+                if (!commentaryData) {
                     res.status(404).json(
                         {
                             status: "fail",
-                            message: "ID ne correspond à aucun commentaire ou ne vous appartient pas"
+                            message: "ID ne correspond à aucun commentaire"
+                        }
+                    )
+                    
+                }
+                else if (userId !== commentaryData?.user_id && !admin) {
+                    res.status(404).json(
+                        {
+                            status: "fail",
+                            message: "modification non-autorisée"
                         }
                     )
                 }
@@ -103,7 +117,6 @@ export class CommentaryController {
             }
         }
         else {
-            console.log("test3");
 
             res.status(404).json(
                 {
@@ -118,6 +131,7 @@ export class CommentaryController {
         const uptContent: string = req.body.content
         const uptTitle: string = req.body.title
         const userId: number = req.body.userId
+        const admin=req.body.admin
 
         if (!commentaryId || !uptTitle || !uptContent) {
             res.status(400).json(
@@ -130,16 +144,13 @@ export class CommentaryController {
             return;
         }
 
-
-        console.log("test1", commentaryId, uptTitle, uptContent);
-
         try {
             // recupere le comment avec l'id commentaryId
             const checkComment = await commentaryService.getCommentaryById(commentaryId);
             console.log(checkComment);
-            
+
             // verifier que ce comment.user_id === req.body.userId
-            if (checkComment && checkComment.users_id !== userId) {
+            if (checkComment && checkComment.user_id !== userId && !admin) {
                 res.status(404).json(
                     {
                         status: "fail",
@@ -163,7 +174,7 @@ export class CommentaryController {
         }
         catch (err: any) {
             console.log(err);
-            
+
             res.status(500).json(
                 {
                     status: "fail",

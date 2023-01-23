@@ -1,4 +1,6 @@
 import { client } from '../client';
+import { Articles } from '../entity/articles';
+import { User } from '../entity/User';
 import { Tarticles } from '../types/Tarticles';
 
 /**
@@ -15,45 +17,56 @@ export class ArticlesService {
     /**
      * recupère tout les articles de la BDD 
      */
-    async getAllArticles() {
-        const data = await client.query('SELECT * FROM articles');
-        if (data.rowCount) {
-            const listArticle: Tarticles[] = data.rows;
-            return listArticle;
-        }
-        return undefined
+    async getAllArticles(): Promise<Articles[] | undefined> {
+        const articles = Articles.find();
+        console.log(articles);
+        return articles;
     }
 
     /**
      * recupère un article par son id de la BDD
      */
-    async getArticlesById(id: number) {
-
-        const data = await client.query('SELECT * FROM articles WHERE id=$1', [id])
-        if (data.rowCount) {
-            return data.rows[0];
+    async getArticlesById(id: number): Promise<Articles | undefined> {
+        const articles = await Articles.find({
+            where: {
+                id: id
+            }
         }
-        return undefined
+        );
+        console.log(articles);
+        return articles[0]
     }
 
     /**
      * ajoute un nouvel article à la BDD
      */
-    async postArticles(title: string, content: string, users_id: number) {
-        const data = await client.query('INSERT INTO articles (title, content,users_id) VALUES ($1,$2,$3) returning *', [title, content, users_id])
-        if (data.rowCount) {
-            return data.rows[0];
-        }
-        return undefined
+    async postArticles(title: string, content: string, user: User): Promise<Articles | undefined> {
+
+        const article = new Articles()
+        article.title = title
+        article.content = content
+        article.user = user
+
+        await article.save()
+
+        return article
     }
 
     /**
      * supprime un article de la BDD
      */
-    async delArticles(id: number) {
-        const data = await client.query('DELETE FROM articles WHERE id=$1 RETURNING *', [id])
-        return data.rowCount;
+    async delArticles(id: number): Promise<Articles | undefined> {
+        const article = this.getArticlesById(id)
+        ;(await article).remove()
+        
+        console.log(article);
+        return article
+
     }
+
+    /*  const data = await client.query('DELETE FROM articles WHERE id=$1 RETURNING *', [id])
+            return data.rowCount; */
+
 
     /**
      * modifie un article par son id de la BDD

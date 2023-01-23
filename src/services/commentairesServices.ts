@@ -1,6 +1,6 @@
 
 import { QueryResult } from "pg";
-import { Tcommentary } from "~/types/Tcommentary";
+import { Tcommentary } from "../types/Tcommentary";
 import { client } from "../client";
 
 /**

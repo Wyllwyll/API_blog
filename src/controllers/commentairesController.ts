@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { CustomRequest } from "~/middleware/usersIdProperty";
-import { Tcommentary } from "~/types/Tcommentary";
+import { CustomRequest } from "../middleware/usersIdProperty";
+import { Tcommentary } from "../types/Tcommentary";
 import { CommentairesServices } from "../services/commentairesServices";
 const commentaryService = new CommentairesServices
 

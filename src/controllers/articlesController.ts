@@ -1,6 +1,7 @@
 import { ArticlesService } from "../services/articlesService";
 import { Request, Response } from "express";
 import { CustomRequest } from "../middleware/usersIdProperty";
+import { User } from "../entity/User";
 
 const articlesService = new ArticlesService()
 
@@ -21,6 +22,8 @@ export class ArticlesController {
     async getArticles(req: Request, res: Response) {
         try {
             const data = await articlesService.getAllArticles();
+            console.log(data);
+
             res.status(200).json(
                 {
                     status: "success",
@@ -49,6 +52,8 @@ export class ArticlesController {
         if (!Number.isNaN(articleId)) {
             try {
                 const data = await articlesService.getArticlesById(articleId)
+                console.log(data);
+
                 if (data) {
                     res.status(200).json(
                         {
@@ -90,13 +95,18 @@ export class ArticlesController {
     *Contrôle préalable à l'ajout d'un nouvel article
      */
     async postArticle(req: CustomRequest, res: Response) {
-        const content = req.body.content
-        const user_id = req.userId
-        const title = req.body.title
+        const content: string = req.body.content
+        const user_id: number = req.body.userId
+        const title: string = req.body.title
 
         if (title && content && user_id) {
             try {
-                const data = await articlesService.postArticles(title, content, user_id)
+                const user = await User.findOne({
+                    where: {
+                        id: user_id
+                    }
+                });
+                const data = await articlesService.postArticles(title, content, user)
                 res.status(201).json(
                     {
                         status: "success",
@@ -131,13 +141,16 @@ export class ArticlesController {
      */
     async deleteArticle(req: CustomRequest, res: Response) {
         const articleId = parseInt(req.params.id);
-        const userId = req.body.userId
-        const admin = req.body.admin
+        const userId: number = req.body.userId
+        const admin: boolean = req.body.admin
 
         if (!Number.isNaN(articleId)) {
+            console.log("test1", articleId);
             try {
                 const articleData = await articlesService.getArticlesById(articleId)
-                if (articleData === 0) {
+                console.log("test2", articleData);
+
+                if (!articleData) {
                     res.status(404).json(
                         {
                             status: "fail",
@@ -145,7 +158,7 @@ export class ArticlesController {
                         }
                     )
                 }
-                else if (userId !== articleData.user_id && !admin) {
+                else if (userId !== articleData.userId && !admin) {
                     res.status(400).json(
                         {
                             status: "fail",
@@ -156,7 +169,7 @@ export class ArticlesController {
 
                 else {
                     const data = await articlesService.delArticles(articleId)
-                    if (data! > 0) {
+                    if (data) {
                         res.status(200).json(
                             {
                                 status: "success",

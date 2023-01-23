@@ -4,5 +4,5 @@ export type Tarticles={
     content:string,
     date_crea:number,
     date_upt:number,
-    users_id:number
+    users_id:number,
 }

@@ -16,7 +16,8 @@ export const articlesRouter = express.Router();
 
 const articlesController = new ArticlesController();
 
-/** route de récuperation de tout les articles */
+/** 
+ * route de récuperation de tout les articles */
 articlesRouter.get('/', authenticateJWT, articlesController.getArticles);
 
 /** route de récuperation des articles par l'ID */

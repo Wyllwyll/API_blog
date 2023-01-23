@@ -25,30 +25,10 @@ export class UserController {
         const password = req.body.password
         try {
             const user = await usersService.getUsersByName(name);
-            const accessToken = jwt.sign({ userId: user.id, admin: user.admin }, accessTokenSecret);
-            if (user != undefined) {
-                bcrypt.compare(password, user.password, function (err, result) {
-                    if (result == true) {
-                        res.status(200).json(
-                            {
-                                status: 'OK',
-                                data: accessToken,
-                                message: 'vous etes bien connecté'
-                            }
-                        )
-                    }
-                    else {
-                        res.status(403).json(
-                            {
-                                status: 'fail',
-                                message: 'mot de passe incorrect',
-                                data: null
-                            }
-                        )
-                    }
-                })
-            }
-            else {
+            console.log(user);
+            
+
+            if (!user) {
                 res.status(404).json(
                     {
                         status: "fail",
@@ -56,7 +36,31 @@ export class UserController {
                         data: null
                     }
                 )
+
+                return;
             }
+
+            bcrypt.compare(password, user.password, function (err, result) {
+                if (result == true) {
+                    const accessToken = jwt.sign({ userId: user.id, admin: user.admin }, accessTokenSecret);
+                    res.status(200).json(
+                        {
+                            status: 'OK',
+                            data: accessToken,
+                            message: 'vous etes bien connecté'
+                        }
+                    )
+                }
+                else {
+                    res.status(403).json(
+                        {
+                            status: 'fail',
+                            message: 'mot de passe incorrect',
+                            data: null
+                        }
+                    )
+                }
+            })
         }
         catch (err: any) {
             res.status(500).json(
@@ -84,7 +88,7 @@ export class UserController {
                     {
                         status: "success",
                         message: "enregistrement réussi",
-                        data: data
+                        data: name
                     }
                 )
             }

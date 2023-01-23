@@ -1,4 +1,5 @@
 import { client } from "../client";
+import { User } from "../entity/User";
 
 
 /**
@@ -11,26 +12,28 @@ export class UsersService {
     /**
      * recupère un user par son nom de la BDD
      */
-    async getUsersByName(name: string) {
+    async getUsersByName(name: string): Promise<User | undefined> {
+        const user = User.findOne({
+            where: {
+                name: name
+            }
+        })
+        if (user) return user;
 
-        const data = await client.query('SELECT * FROM users WHERE name=$1', [name])
-        console.log((data.rows));
-
-        if (data.rowCount) {
-            return data.rows[0];
-        }
-        return undefined
+        return undefined;
     }
 
     /**
      * ajoute un utilisateur dans la BDD
      */
-    async addUsers(name: string, hash: string) {
-        const data = await client.query('INSERT INTO users (name, password) VALUES ($1,$2)RETURNING *', [name, hash])
-        if (data.rowCount) {
-            return data.rows[0];
-        }
-        return undefined
+    async addUsers(name: string, hash: string): Promise<User | undefined> {
+        const user = new User()
+        user.name = name
+        user.password = hash
+
+        await user.save()
+
+        return user
     }
 
 
